@@ -17,6 +17,7 @@
 package com.karumi.headerrecyclerview.sample;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +28,9 @@ import com.karumi.headerrecyclerview.HeaderRecyclerViewAdapter;
  * characters.
  */
 public class DragonBallAdapter extends
-    HeaderRecyclerViewAdapter<RecyclerView.ViewHolder, DragonBallHeader, DragonBallCharacter> {
+    HeaderRecyclerViewAdapter<RecyclerView.ViewHolder, DragonBallHeader, DragonBallCharacter, DragonBallFooter> {
+
+  private static final String LOG_TAG = DragonBallAdapter.class.getSimpleName();
 
   @Override
   protected RecyclerView.ViewHolder onCreateHeaderViewHolder(ViewGroup parent, int viewType) {
@@ -43,6 +46,13 @@ public class DragonBallAdapter extends
     return new CharacterViewHolder(characterView);
   }
 
+  @Override
+  protected RecyclerView.ViewHolder onCreateFooterViewHolder(ViewGroup parent, int viewType) {
+    LayoutInflater inflater = getLayoutInflater(parent);
+    View footerView = inflater.inflate(R.layout.row_dragon_ball_footer, parent, false);
+    return new FooterViewHolder(footerView);
+  }
+
   @Override protected void onBindHeaderViewHolder(RecyclerView.ViewHolder holder, int position) {
     DragonBallHeader header = getHeader();
     HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
@@ -55,7 +65,25 @@ public class DragonBallAdapter extends
     characterViewHolder.render(character);
   }
 
+  @Override protected void onBindFooterViewHolder(RecyclerView.ViewHolder holder, int position) {
+    DragonBallFooter footer = getFooter();
+    FooterViewHolder footerViewHolder = (FooterViewHolder) holder;
+    footerViewHolder.render(footer);
+  }
+
   private LayoutInflater getLayoutInflater(ViewGroup parent) {
     return LayoutInflater.from(parent.getContext());
+  }
+
+  @Override protected void onHeaderViewRecycled(RecyclerView.ViewHolder holder) {
+    Log.v(LOG_TAG, "onHeaderViewRecycled(RecyclerView.ViewHolder holder)");
+  }
+
+  @Override protected void onItemViewRecycled(RecyclerView.ViewHolder holder) {
+    Log.v(LOG_TAG, "onItemViewRecycled(RecyclerView.ViewHolder holder)");
+  }
+
+  @Override protected void onFooterViewRecycled(RecyclerView.ViewHolder holder) {
+    Log.v(LOG_TAG, "onFooterViewRecycled(RecyclerView.ViewHolder holder)");
   }
 }

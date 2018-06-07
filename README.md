@@ -1,7 +1,7 @@
-HeaderRecyclerView [![Build Status](https://travis-ci.org/Karumi/HeaderRecyclerView.svg?branch=master)](https://travis-ci.org/Karumi/HeaderRecyclerView) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.karumi/headerrecyclerview/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.karumi/headerrecyclerview) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-HeaderRecyclerView-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1841)
+![Karumi logo][karumilogo] HeaderRecyclerView [![Build Status](https://travis-ci.org/Karumi/HeaderRecyclerView.svg?branch=master)](https://travis-ci.org/Karumi/HeaderRecyclerView) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.karumi/headerrecyclerview/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.karumi/headerrecyclerview) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-HeaderRecyclerView-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1841)
 ==================
 
-HeaderRecyclerView is an Android library created to be able to use ``RecyclerView.Adapter`` with a header in a easy way. To use this library create your ``RecyclerView.Adapter`` classes extending from ``HeaderRecyclerViewAdapter``.
+HeaderRecyclerView is an Android library created to be able to use ``RecyclerView.Adapter`` with a header and/or footer in a easy way. To use this library create your ``RecyclerView.Adapter`` classes extending from ``HeaderRecyclerViewAdapter``.
 
 Screenshots
 -----------
@@ -17,13 +17,14 @@ To use ``HeaderRecyclerView`` in your application you have to follow this steps:
 
 ```java
 
-public class DragonBallAdapter extends HeaderRecyclerViewAdapter<RecyclerView.ViewHolder, DragonBallHeader, DragonBallCharacter> {
+public class DragonBallAdapter extends HeaderRecyclerViewAdapter<RecyclerView.ViewHolder, DragonBallHeader, DragonBallCharacter, DragonBallFooter> {
 
 
 ```
 
-* 2 - Implement ``onCreateHeaderViewHolder``, ``onCreateItemViewHolder``, ``onBindItemViewHolder`` and ``onBindViewHolder`` to create your ``RecyclerView.ViewHolder`` instances and draw your rows:
+* 2 - Implement ``onCreateHeaderViewHolder``, ``onCreateItemViewHolder``,``onCreateFooterViewHolder`` , ``onBindHeaderViewHolder``, ``onBindItemViewHOlder`` and ``onBindFooterViewHolder`` to create your ``RecyclerView.ViewHolder`` instances and draw your rows:
 
+**If you don't use header or footer, you can ignore overriding corresponding createViewHolder and bindViewHolder method**
 ```java
 
 @Override
@@ -40,6 +41,13 @@ public class DragonBallAdapter extends HeaderRecyclerViewAdapter<RecyclerView.Vi
     return new CharacterViewHolder(characterView);
   }
 
+  @Override
+  protected RecyclerView.ViewHolder onCreateFooterViewHolder(ViewGroup parent, int viewType) {
+    LayoutInflater inflater = getLayoutInflater(parent);
+    View footerView = inflater.inflate(R.layout.row_dragon_ball_footer, parent, false);
+    return new FooterViewHolder(footerView);
+  }
+
   @Override protected void onBindHeaderViewHolder(RecyclerView.ViewHolder holder, int position) {
     DragonBallHeader header = getHeader();
     HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
@@ -52,6 +60,12 @@ public class DragonBallAdapter extends HeaderRecyclerViewAdapter<RecyclerView.Vi
     characterViewHolder.render(character);
   }
 
+  @Override protected void onBindFooterViewHolder(RecyclerView.ViewHolder holder, int position) {
+    DragonBallFooter footer = getFooter();
+    FooterViewHolder footerViewHolder = (FooterViewHolder) holder;
+    footerViewHolder.render(footer);
+  }
+
 ```
 
 * 3 - Configure your ``RecyclerView`` widget with this layout:
@@ -60,13 +74,13 @@ public class DragonBallAdapter extends HeaderRecyclerViewAdapter<RecyclerView.Vi
 
   List<DragonBallCharacter> characters = getDragonBallCharacters();
   DragonBallHeader header = getHeader(characters);
+  DragonBallFooter footer = getFooter();
   adapter.setHeader(header);
+  adapter.setFooter(footer);
   adapter.setItems(characters);
   recyclerView.setAdapter(adapter);
 
 ```
-
-**You can use methods like ``isHeaderType(viewType)`` or ``isHeaderPosition(position)`` to return the ViewHolder associated to the header or to draw the view associated to the header. The header instance can be obtained using the method ``getHeader()``**.
 
 * 4 - If you are using a ``GridLayoutManager`` instead of a ``LinearLayoutManager`` remember you'll have to configure the ``SpanSizeLookup`` used in the ``LayoutManager`` instance. If you are using ``HeaderRecyclerView`` with a ``GridLayoutManager`` you can create an instance of ``HeaderSpanSizeLookup`` and configure your ``LayoutManager`` instance:
 
@@ -78,6 +92,23 @@ public class DragonBallAdapter extends HeaderRecyclerViewAdapter<RecyclerView.Vi
 
 ```
 
+* 5 - You can use following method to handle view life cycle event:
+```java
+
+    @Override
+    protected void onHeaderViewRecycled(VH holder) {
+    }
+
+    @Override
+    protected void onItemViewRecycled(VH holder) {
+    }
+
+    @Override
+    protected void onFooterViewRecycled(VH holder) {
+    }
+
+```
+
 Add it to your project
 ----------------------
 
@@ -86,7 +117,7 @@ Add ``HeaderRecyclerView`` dependency to your ``build.gradle`` file
 ```groovy
 
 dependencies{
-    compile 'com.karumi:headerrecyclerview:1.0.0'
+    compile 'com.karumi:headerrecyclerview:1.1.0'
 }
 
 ```
@@ -98,7 +129,7 @@ or to your ``pom.xml`` if you are using Maven instead of Gradle
 <dependency>
     <groupId>com.karumi</groupId>
     <artifactId>headerrecyclerview</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <type>aar</type>
 </dependency>
 
@@ -116,6 +147,8 @@ Libraries used in this project
 * [JUnit] [3]
 * [Picasso] [4]
 * [Nox] [5]
+* [Mockito] [6]
+* [Powermock] [7]
 
 External resources used in this project
 ---------------------------------------
@@ -145,3 +178,7 @@ License
 [3]: https://github.com/junit-team/junit
 [4]: https://github.com/square/picasso
 [5]: https://github.com/pedrovgs/Nox
+[6]: https://github.com/mockito/mockito
+[7]: https://github.com/jayway/powermock
+
+[karumilogo]: https://cloud.githubusercontent.com/assets/858090/11626547/e5a1dc66-9ce3-11e5-908d-537e07e82090.png
